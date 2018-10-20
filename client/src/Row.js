@@ -34,11 +34,12 @@ export default class {
   }
 
   getSearchObject() {
-    if(!this.column || !(this.value || this.list.length) || this.operator) return;
+    debugger;
+    if(!this.column || !(this.value || this.list.length) || !this.operator) return;
     return {
       column: this.column,
-      list: list.length ? list : undefined,
-      value: value || undefined,
+      list: this.list.length ? this.list : undefined,
+      value: this.value || undefined,
       operator: this.operator,
     };
   }

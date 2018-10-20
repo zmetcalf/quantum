@@ -11,15 +11,18 @@ class Form extends Component {
       searchItems: [new Row()],
       error: '',
     };
+    this.search    = this.search.bind(this);
+    this.addRow    = this.addRow.bind(this);
+    this.removeRow = this.removeRow.bind(this);
   }
 
   search() {
-    if(!searchItems.length) return;
+    if(!this.state.searchItems.length) return;
     const self = this;
     if(this.error) this.setState({ error: '' });
 
     fetch(`/api/session?filters=${JSON.stringify(
-      _.chain(this.searchItems)
+      _.chain(this.state.searchItems)
        .map(item => item.getSearchObject())
        .compact()
        .value()
@@ -30,16 +33,16 @@ class Form extends Component {
   }
 
   addRow() {
-    this.setState({ searchItems: [...this.searchItems, new Row()] });
+    this.setState({ searchItems: [...this.state.searchItems, new Row()] });
   }
 
   removeRow(row) {
-    const index = this.searchItems.indexOf(row);
+    const index = this.state.searchItems.indexOf(row);
     if(!index) return;
 
     this.setState({ searchItems: [
-      ...this.searchItems.slice(0, index),
-      ...this.searchItems.slice(index + 1)
+      ...this.state.searchItems.slice(0, index),
+      ...this.state.searchItems.slice(index + 1)
     ] });
   }
 
@@ -47,16 +50,16 @@ class Form extends Component {
     switch(row.operator) {
       case 'equals':
         return row.getColumnType() === 'string' ? (
-          <input type='text' onChange={row.setValue}/>
+          <input type='text' className='form-control' onChange={row.setValue}/>
         ) : (
-          <input type='number' onChange={row.setValue}/>
+          <input type='number' className='form-control' onChange={row.setValue}/>
         );
       case 'contains':
       case 'starts with':
-          return <input type='text' onChange={row.setValue}/>
+          return <input type='text' className='form-control' onChange={row.setValue}/>
       case 'greater than':
       case 'less than':
-          return <input type='number' onChange={row.setValue}/>
+          return <input type='number' className='form-control' onChange={row.setValue}/>
       case 'in list':
 
       case 'between':
@@ -88,7 +91,7 @@ class Form extends Component {
             </div>
             {row.column ?
               <div className='col'>
-                <select className='form-control' onClick={row.setOperator}>
+                <select className='form-control' onClick={e => {row.setOperator(e); this.forceUpdate();}}>
                     <option></option>
                   {row.operators.map((operator, index) => (
                     <option key={index} value={operator}>{operator}</option>
