@@ -103,6 +103,38 @@ class Form extends Component {
           </div>
         ))}
         <button onClick={this.addRow} type='button' className='btn btn-primary'>AND</button>
+        <table className='table'>
+          <thead>
+            <tr>
+              <th scope='col'>#</th>
+              <th scope='col'>User Email</th>
+              <th scope='col'>Screen Width</th>
+              <th scope='col'>Screen Height</th>
+              <th scope='col'># of Visits</th>
+              <th scope='col'>First Name</th>
+              <th scope='col'>Last Name</th>
+              <th scope='col'>Page Response time (ms)</th>
+              <th scope='col'>Domain</th>
+              <th scope='col'>Page Path</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.map((row, index) => (
+              <tr key={index}>
+                <th>{index}</th>
+                <th>{row.user_email}</th>
+                <th>{row.screen_width}</th>
+                <th>{row.screen_height}</th>
+                <th>{row.visits}</th>
+                <th>{row.user_first_name}</th>
+                <th>{row.user_last_name}</th>
+                <th>{row.page_response}</th>
+                <th>{row.domain}</th>
+                <th>{row.path}</th>
+              </tr>
+            ))}
+          </tbody>
+        </table>
         <button onClick={this.search} type='button' className='btn btn-primary'>Search</button>
       </section>
     );

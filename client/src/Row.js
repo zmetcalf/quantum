@@ -34,7 +34,6 @@ export default class {
   }
 
   getSearchObject() {
-    debugger;
     if(!this.column || !(this.value || this.list.length) || !this.operator) return;
     return {
       column: this.column,
@@ -50,7 +49,6 @@ export default class {
   }
 
   setColumn(e) {
-    debugger;
     this.column = e.target.value;
     this.setOperators();
   }
