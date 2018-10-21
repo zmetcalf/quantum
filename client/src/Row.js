@@ -5,7 +5,7 @@ export default class {
   constructor() {
     this.column      = 'user_email';
     this.value       = '';
-    this.list        = [];
+    this.betweenHigh = 0;
     this.operator    = '';
     this.operators   = [];
     this.filterComp  = null;
@@ -33,20 +33,13 @@ export default class {
   }
 
   getSearchObject() {
-    if(!this.column || !(this.value || this.list.length) || !this.operator) return;
-    if(this.operator === 'in list')
-      return {
-        column: this.column,
-        list: this.value.split(','),
-        operator: this.operator,
-      };
-    else
-      return {
-        column: this.column,
-        list: this.list.length ? this.list : undefined,
-        value: this.value || undefined,
-        operator: this.operator,
-      };
+    if(!this.column || !this.value || (this.operator === 'between' && !this.betweenHigh) || !this.operator) return;
+    return {
+      column: this.column,
+      value: this.value || undefined,
+      betweenHigh: this.betweenHigh || undefined,
+      operator: this.operator,
+    };
   }
 
   getColumnType() {
@@ -62,7 +55,6 @@ export default class {
 
   setOperator(e) {
     this.operator = e.target.value;
-    this.list = [];
     this.value = '';
   }
 
@@ -96,14 +88,11 @@ export default class {
   }
 
   setValue(e) {
-    this.list = [];
     this.value = e.target.value;
   }
 
   setBetween(first, second) {
-    this.value = '';
-    if(!first) first = this.list.length ? this.list[0] : 0;
-    if(!second) second = this.list.length === 2 ? this.list[1] : 0;
-    this.list = [first, second];
+    this.value = first ? first : (this.value ||  0);
+    this.betweenHigh = second ? second : (this.betweenHigh || 0);
   }
 }

@@ -24,7 +24,7 @@ app.get('/api/session', (req, res) => {
     return res.status(400).json('Could not parse request');
   };
 
-  const query = 'SELECT * FROM `session` WHERE ' + _.chain(filters)
+  const where = _.chain(filters)
     .map(filter => {
       switch(filter.operator) {
         case 'equals':
@@ -34,15 +34,10 @@ app.get('/api/session', (req, res) => {
         case 'starts with':
           return mysql.escapeId(filter.column) + ' LIKE ' + mysql.escape(`${filter.value}%`);
         case 'in list':
-          return mysql.escapeId(filter.column) + ' IN (' +
-            _.chain(filter.list)
-              .map(item => mysql.escape(item))
-              .join(', ')
-              .value()
-          + ')';
+          return mysql.escapeId(filter.column) + ' IN (' +  mysql.escape(filter.value) + ')';
         case 'between':
-          if(filter.list.length !== 2) return;
-          return mysql.escapeId(filter.column) + ' BETWEEN ' + mysql.escape(filter.list[0]) + ' AND ' +  mysql.escape(filter.list[1]);
+          if(!filter.betweenHigh) return;
+          return mysql.escapeId(filter.column) + ' BETWEEN ' + mysql.escape(filter.value) + ' AND ' +  mysql.escape(filter.betweenHigh);
         case 'greater than':
           return mysql.escapeId(filter.column) + ' > ' + mysql.escape(filter.value);
         case 'less than':
@@ -53,12 +48,14 @@ app.get('/api/session', (req, res) => {
     .join(' AND ')
     .value();
 
+  if(!where) return res.json([]);
+
   pool.getConnection((err, connection) => {
     if(err) {
       console.error(err);
       res.status(500).json({ error: 'Server Error' });
     }
-    connection.query(query, (err, results, fields) => {
+    connection.query('SELECT * FROM `session` WHERE ' + where, (err, results, fields) => {
         connection.release();
         if(err) {
           console.error(err);
