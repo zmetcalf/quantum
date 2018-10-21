@@ -38,7 +38,7 @@ class Form extends Component {
 
   removeRow(row) {
     const index = this.state.searchItems.indexOf(row);
-    if(!index) return;
+    if(index === -1) return;
 
     this.setState({ searchItems: [
       ...this.state.searchItems.slice(0, index),
@@ -48,23 +48,24 @@ class Form extends Component {
 
   getFilterComp(row) {
     switch(row.operator) {
+      case 'in list':
       case 'equals':
-        return row.getColumnType() === 'string' ? (
-          <input type='text' className='form-control' onChange={row.setValue}/>
-        ) : (
-          <input type='number' className='form-control' onChange={row.setValue}/>
-        );
       case 'contains':
       case 'starts with':
-          return <input type='text' className='form-control' onChange={row.setValue}/>
       case 'greater than':
       case 'less than':
-          return <input type='number' className='form-control' onChange={row.setValue}/>
-      case 'in list':
-
+        return <input type={row.getColumnType() === 'string' || row.operator === 'in list' ? 'text' : 'number'}
+                 className='form-control'
+                 placeholder={row.operator === 'in list' ? 'Seperate by commas' : ''}
+                 onChange={row.setValue}/>
       case 'between':
-
-
+        row.setBetween();
+        return (
+          <div>
+            <input type='number' className='form-control' onChange={e => row.setBetween(e.target.value)}/>
+            <input type='number' className='form-control' onChange={e => row.setBetween(null, e.target.value)}/>
+          </div>
+        );
     }
     return null;
   }
@@ -80,10 +81,13 @@ class Form extends Component {
         <h1>SEARCH FOR SESSIONS</h1>
         <hr/>
         {searchItems.map((row, index) => (
-          <div key={index} className='form-row'>
-            <div className='col' onClick={() => this.removeRow(row)}> - </div>
+          <div key={row.uuid} className='form-row'>
+            {searchItems.length > 1 ?
+              <div className='col' onClick={() => this.removeRow(row)}> - </div> :
+              <div className='col'></div>
+            }
             <div className='col'>
-              <select className='form-control' onClick={row.setColumn}>
+              <select className='form-control' onClick={e => { row.setColumn(e); this.forceUpdate(); }}>
                 {row.predicates.map((predicate, index) => (
                   <option key={index} value={predicate.value}>{predicate.title}</option>
                 ))}
@@ -92,7 +96,7 @@ class Form extends Component {
             {row.column ?
               <div className='col'>
                 <select className='form-control' onClick={e => {row.setOperator(e); this.forceUpdate();}}>
-                    <option></option>
+                    <option value=''></option>
                   {row.operators.map((operator, index) => (
                     <option key={index} value={operator}>{operator}</option>
                   ))}

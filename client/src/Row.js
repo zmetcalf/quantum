@@ -1,4 +1,4 @@
-import React from 'react';
+import uuid from 'uuid/v1';
 import _ from 'lodash';
 
 export default class {
@@ -9,6 +9,7 @@ export default class {
     this.operator    = '';
     this.operators   = [];
     this.filterComp  = null;
+    this.uuid        = uuid();
     this.predicates  = [
       { title: 'User Email', type: 'string', value: 'user_email' },
       { title: 'Screen Width', type: 'number', value: 'screen_width' },
@@ -29,18 +30,23 @@ export default class {
     this.getColumnType   = this.getColumnType.bind(this);
     this.setOperator     = this.setOperator.bind(this);
     this.setValue        = this.setValue.bind(this);
-    this.addToList       = this.addToList.bind(this);
-    this.removeFromList  = this.removeFromList.bind(this);
   }
 
   getSearchObject() {
     if(!this.column || !(this.value || this.list.length) || !this.operator) return;
-    return {
-      column: this.column,
-      list: this.list.length ? this.list : undefined,
-      value: this.value || undefined,
-      operator: this.operator,
-    };
+    if(this.operator === 'in list')
+      return {
+        column: this.column,
+        list: this.value.split(','),
+        operator: this.operator,
+      };
+    else
+      return {
+        column: this.column,
+        list: this.list.length ? this.list : undefined,
+        value: this.value || undefined,
+        operator: this.operator,
+      };
   }
 
   getColumnType() {
@@ -51,10 +57,13 @@ export default class {
   setColumn(e) {
     this.column = e.target.value;
     this.setOperators();
+    this.operator = '';
   }
 
   setOperator(e) {
     this.operator = e.target.value;
+    this.list = [];
+    this.value = '';
   }
 
   setOperators() {
@@ -91,20 +100,10 @@ export default class {
     this.value = e.target.value;
   }
 
-  addToList(e) {
+  setBetween(first, second) {
     this.value = '';
-    this.list = [...this.list, e.target.value];
-  }
-
-  removeFromList(e) {
-    this.value = '';
-
-    const index = this.list.indexOf(e.target.value);
-    if(!index) return;
-
-    this.list = [
-      ...list.slice(0, index),
-      ...list.slice(index + 1)
-    ];
+    if(!first) first = this.list.length ? this.list[0] : 0;
+    if(!second) second = this.list.length === 2 ? this.list[1] : 0;
+    this.list = [first, second];
   }
 }
