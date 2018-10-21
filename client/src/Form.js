@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 
 import Row from './Row';
+import RowComponent from './RowComponent';
 
 class Form extends Component {
   constructor(props) {
@@ -46,30 +47,6 @@ class Form extends Component {
     ] });
   }
 
-  getFilterComp(row) {
-    switch(row.operator) {
-      case 'in list':
-      case 'equals':
-      case 'contains':
-      case 'starts with':
-      case 'greater than':
-      case 'less than':
-        return <input type={row.getColumnType() === 'string' || row.operator === 'in list' ? 'text' : 'number'}
-                 className='form-control'
-                 placeholder={row.operator === 'in list' ? 'Seperate by commas' : ''}
-                 onChange={row.setValue}/>
-      case 'between':
-        row.setBetween();
-        return (
-          <div>
-            <input type='number' className='form-control' onChange={e => row.setBetween(e.target.value)}/>
-            <input type='number' className='form-control' onChange={e => row.setBetween(null, e.target.value)}/>
-          </div>
-        );
-    }
-    return null;
-  }
-
   render() {
     const {
       results,
@@ -81,30 +58,9 @@ class Form extends Component {
         <h1>SEARCH FOR SESSIONS</h1>
         <hr/>
         {searchItems.map((row, index) => (
-          <div key={row.uuid} className='form-row'>
-            {searchItems.length > 1 ?
-              <div className='col' onClick={() => this.removeRow(row)}> - </div> :
-              <div className='col'></div>
-            }
-            <div className='col'>
-              <select className='form-control' onClick={e => { row.setColumn(e); this.forceUpdate(); }}>
-                {row.predicates.map((predicate, index) => (
-                  <option key={index} value={predicate.value}>{predicate.title}</option>
-                ))}
-              </select>
-            </div>
-            {row.column ?
-              <div className='col'>
-                <select className='form-control' onClick={e => {row.setOperator(e); this.forceUpdate();}}>
-                    <option value=''></option>
-                  {row.operators.map((operator, index) => (
-                    <option key={index} value={operator}>{operator}</option>
-                  ))}
-                </select>
-              </div>
-            : null}
-            <div className='col'>{this.getFilterComp(row)}</div>
-          </div>
+          <RowComponent row={row}
+                        parentListLength={searchItems.length}
+                        key={row.uuid} />
         ))}
         <button onClick={this.addRow} type='button' className='btn btn-primary'>AND</button>
         <table className='table'>
