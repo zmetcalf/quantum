@@ -8,7 +8,6 @@ export default class {
     this.betweenHigh = 0;
     this.operator    = '';
     this.operators   = [];
-    this.filterComp  = null;
     this.uuid        = uuid();
     this.predicates  = [
       { title: 'User Email', type: 'string', value: 'user_email' },

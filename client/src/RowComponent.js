@@ -24,18 +24,25 @@ class RowComponent extends Component {
       case 'starts with':
       case 'greater than':
       case 'less than':
-        return <input type={row.getColumnType() === 'string' || row.operator === 'in list' ? 'text' : 'number'}
+        return <div className='col'>
+          <input type={row.getColumnType() === 'string' || row.operator === 'in list' ? 'text' : 'number'}
                  className='form-control'
                  placeholder={row.operator === 'in list' ? 'Seperate by commas' : ''}
                  value={this.props.value}
                  onChange={this.setValue}/>
+        </div>
       case 'between':
-        return (
-          <div>
+        return [
+          <div className='col'>
             <input type='number' className='form-control' value={this.props.value} onChange={e => this.setBetween(e.target.value)}/>
+          </div>,
+          <div className='col and-col'>
+            <div className='and-item'> and </div>
+          </div>,
+          <div className='col'>
             <input type='number' className='form-control' value={this.props.beteenHigh} onChange={e => this.setBetween(null, e.target.value)}/>
           </div>
-        );
+        ];
     }
     return null;
   }
@@ -66,6 +73,7 @@ class RowComponent extends Component {
     const {
       row,
       parentListLength,
+      removeRow
     } = this.props;
 
     const {
@@ -75,8 +83,8 @@ class RowComponent extends Component {
     return (
       <div key={row.uuid} className='form-row'>
         {parentListLength > 1 ?
-          <div className='col' onClick={() => this.removeRow(row)}> - </div> :
-          <div className='col'></div>
+          <div className='alert alert-primary remove-item' onClick={() => removeRow(row)}> - </div> :
+          <div></div>
         }
         <div className='col'>
           <select className='form-control' onChange={this.setColumn}>
@@ -95,7 +103,7 @@ class RowComponent extends Component {
             </select>
           </div>
         : null}
-        <div className='col'>{this.getFilterComp(row)}</div>
+        {this.getFilterComp(row)}
       </div>
     );
   }

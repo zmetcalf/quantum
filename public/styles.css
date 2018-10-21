@@ -1,0 +1,19 @@
+.remove-item {
+  max-height: 38px;
+};
+
+.and-col {
+  max-width: 50px;
+}
+
+.and-item {
+  height: 38px;
+  padding-top: 8px;
+  background-color: #cce5ff;
+  border-color: #b8daff;
+  text-align: center;
+  overflow: auto;
+  /* From bootstrap */
+  border: 1px solid transparent;
+  border-radius: .25rem;
+}

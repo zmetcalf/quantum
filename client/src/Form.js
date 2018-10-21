@@ -60,9 +60,14 @@ class Form extends Component {
         {searchItems.map((row, index) => (
           <RowComponent row={row}
                         parentListLength={searchItems.length}
+                        removeRow={this.removeRow}
                         key={row.uuid} />
         ))}
-        <button onClick={this.addRow} type='button' className='btn btn-primary'>AND</button>
+
+        <button onClick={this.addRow} type='button' className='btn btn-primary' style={{marginTop: 20 + 'px'}}>AND</button>
+
+        <hr/>
+        <button onClick={this.search} type='button' className='btn btn-primary float-right' style={{marginBottom: 20 + 'px'}}>Search</button>
         <table className='table'>
           <thead>
             <tr>
@@ -95,7 +100,6 @@ class Form extends Component {
             ))}
           </tbody>
         </table>
-        <button onClick={this.search} type='button' className='btn btn-primary'>Search</button>
       </section>
     );
   }
