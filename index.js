@@ -28,20 +28,30 @@ app.get('/api/session', (req, res) => {
     .map(filter => {
       switch(filter.operator) {
         case 'equals':
-          return mysql.escapeId(filter.column) + '=' + mysql.escape(filter.value);
+          return `${mysql.escapeId(filter.column)} = ${mysql.escape(filter.value)}`;
         case 'contains':
-          return mysql.escapeId(filter.column) + ' LIKE ' + mysql.escape(`%${filter.value}%`);
+          return `${mysql.escapeId(filter.column)} LIKE ${mysql.escape(`%${filter.value.trim()}%`)}`;
         case 'starts with':
-          return mysql.escapeId(filter.column) + ' LIKE ' + mysql.escape(`${filter.value}%`);
+          return `${mysql.escapeId(filter.column)} LIKE ${mysql.escape(`${filter.value.trim()}%`)}`;
         case 'in list':
-          return mysql.escapeId(filter.column) + ' IN (' +  mysql.escape(filter.value) + ')';
+          return `${mysql.escapeId(filter.column)} IN (${_.chain(filter.value)
+            .split(',')
+            .map(item => {
+              if(_.isNaN(Number(item)))
+                return mysql.escape(item.trim());
+              else
+                return mysql.escape(Number(item));
+            })
+            .join(', ')
+            .value()
+          })`;
         case 'between':
           if(!filter.betweenHigh) return;
-          return mysql.escapeId(filter.column) + ' BETWEEN ' + mysql.escape(filter.value) + ' AND ' +  mysql.escape(filter.betweenHigh);
+          return `${mysql.escapeId(filter.column)} BETWEEN ${mysql.escape(filter.value)} AND ${mysql.escape(filter.betweenHigh)}`;
         case 'greater than':
-          return mysql.escapeId(filter.column) + ' > ' + mysql.escape(filter.value);
+          return `${mysql.escapeId(filter.column)} > ${mysql.escape(filter.value)}`;
         case 'less than':
-          return mysql.escapeId(filter.column) + ' < ' + mysql.escape(filter.value);
+          return `${mysql.escapeId(filter.column)}  < ${mysql.escape(filter.value)}`;
       };
     })
     .compact()

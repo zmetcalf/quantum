@@ -56,6 +56,7 @@ export default class {
   setOperator(e) {
     this.operator = e.target.value;
     this.value = '';
+    this.betweenHigh = 0;
   }
 
   setOperators() {
@@ -92,7 +93,7 @@ export default class {
   }
 
   setBetween(first, second) {
-    this.value = first ? first : (this.value ||  0);
-    this.betweenHigh = second ? second : (this.betweenHigh || 0);
+    this.value = first;
+    this.betweenHigh = second;
   }
 }

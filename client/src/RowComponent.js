@@ -6,10 +6,14 @@ class RowComponent extends Component {
 
     this.state = {
       operator: props.row.operator,
+      value: props.row.value,
+      betweenHigh: props.row.betweenHigh,
     };
 
     this.setColumn   = this.setColumn.bind(this);
     this.setOperator = this.setOperator.bind(this);
+    this.setValue = this.setValue.bind(this);
+    this.setBetween = this.setBetween.bind(this);
   }
 
   getFilterComp(row) {
@@ -23,13 +27,13 @@ class RowComponent extends Component {
         return <input type={row.getColumnType() === 'string' || row.operator === 'in list' ? 'text' : 'number'}
                  className='form-control'
                  placeholder={row.operator === 'in list' ? 'Seperate by commas' : ''}
-                 onChange={row.setValue}/>
+                 value={this.props.value}
+                 onChange={this.setValue}/>
       case 'between':
-        row.setBetween();
         return (
           <div>
-            <input type='number' className='form-control' onChange={e => row.setBetween(e.target.value)}/>
-            <input type='number' className='form-control' onChange={e => row.setBetween(null, e.target.value)}/>
+            <input type='number' className='form-control' value={this.props.value} onChange={e => this.setBetween(e.target.value)}/>
+            <input type='number' className='form-control' value={this.props.beteenHigh} onChange={e => this.setBetween(null, e.target.value)}/>
           </div>
         );
     }
@@ -43,7 +47,19 @@ class RowComponent extends Component {
 
   setOperator(e) {
     this.props.row.setOperator(e);
-    this.setState({ operator: e.target.value });
+    this.setState({ operator: e.target.value, betweenHigh: 0, value: '' });
+  }
+
+  setValue(e) {
+    this.props.row.setValue(e);
+    this.setState({ betweenHigh: 0, value: e.target.value });
+  }
+
+  setBetween(first, second) {
+    const value = first ? first : (this.state.value ||  0);
+    const betweenHigh = second ? second : (this.state.betweenHigh || 0);
+    this.props.row.setBetween(value, betweenHigh);
+    this.setState({ betweenHigh, value });
   }
 
   render() {
